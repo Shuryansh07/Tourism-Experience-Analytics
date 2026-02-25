@@ -9,7 +9,7 @@ from sklearn.metrics import accuracy_score, r2_score, mean_absolute_error
 # 1. Load the cleaned data
 df = pd.read_csv('cleaned_tourism_data.csv')
 
-# --- FEATURE ENGINEERING [cite: 63, 65] ---
+# --- FEATURE ENGINEERING ---
 
 # Calculate historical popularity (average rating) for each attraction type
 # This helps the Regression model understand which types are generally liked more
@@ -21,7 +21,7 @@ df['Avg_Type_Rating'] = df['AttractionType'].map(type_means)
 user_freq = df['UserId'].value_counts().to_dict()
 df['User_Travel_Freq'] = df['UserId'].map(user_freq)
 
-# 2. Encoding Categorical Variables [cite: 64]
+# 2. Encoding Categorical Variables 
 encoders = {}
 categorical_cols = ['Continent', 'Country', 'VisitMode', 'AttractionType', 'Region']
 
@@ -36,13 +36,13 @@ with open('encoders.pkl', 'wb') as f:
     pickle.dump(encoders, f)
 
 # --- TASK 1: CLASSIFICATION (Predicting Visit Mode) [cite: 24, 76] ---
-# Features: Demographics, Attraction Type, Seasonality, and User Behavior [cite: 31-34]
+# Features: Demographics, Attraction Type, Seasonality, and User Behavior 
 X_cls = df[['Continent', 'Country', 'Region', 'AttractionType', 'VisitMonth', 'User_Travel_Freq']]
 y_cls = df['VisitMode']
 
 X_train_c, X_test_c, y_train_c, y_test_c = train_test_split(X_cls, y_cls, test_size=0.2, random_state=42)
 
-# Use Random Forest Classifier [cite: 77]
+# Use Random Forest Classifier 
 clf = RandomForestClassifier(n_estimators=100, random_state=42)
 clf.fit(X_train_c, y_train_c)
 
@@ -52,7 +52,7 @@ print(f"--- Classification Results ---")
 print(f"Accuracy Score: {accuracy_score(y_test_c, cls_pred):.2f}")
 
 # --- TASK 2: REGRESSION (Predicting Ratings) [cite: 11, 74] ---
-# Features: Contextual visit details and Attraction popularity [cite: 18-21, 75]
+# Features: Contextual visit details and Attraction popularity 
 X_reg = df[['Continent', 'Country', 'VisitMode', 'AttractionType', 'VisitMonth', 'Avg_Type_Rating']]
 y_reg = df['Rating']
 
@@ -68,7 +68,7 @@ print(f"\n--- Regression Results ---")
 print(f"R2 Score: {r2_score(y_test_r, reg_pred):.2f}")
 print(f"Mean Absolute Error: {mean_absolute_error(y_test_r, reg_pred):.2f}")
 
-# 3. Save the Models for Deployment [cite: 85]
+# 3. Save the Models for Deployment 
 with open('visit_mode_model.pkl', 'wb') as f:
     pickle.dump(clf, f)
 with open('rating_model.pkl', 'wb') as f:

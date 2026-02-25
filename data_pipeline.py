@@ -17,7 +17,7 @@ for df in [transaction_df, user_df, city_df, type_df, visit_mode_df,
            continent_df, country_df, region_df, item_df]:
     df.columns = df.columns.str.strip()
 
-# 3. Step-by-Step Merging [cite: 66]
+# 3. Step-by-Step Merging 
 # Build Geography
 geo = city_df.merge(country_df, on='CountryId', how='left') \
              .merge(region_df, on='RegionId', how='left') \
@@ -38,7 +38,7 @@ final_df = transaction_df.merge(user_master, on='UserId', how='left') \
                          .merge(visit_mode_df, on='VisitMode', how='left', suffixes=('', '_drop'))
 
 # Final Merge (Check if your Transaction table uses 'VisitMode' or 'VisitModeId')
-# We use 'VisitMode' here as it's common in this dataset [cite: 132, 161]
+# We use 'VisitMode' here as it's common in this dataset 
 final_df = transaction_df.merge(user_master, on='UserId', how='left') \
                          .merge(item_master, on='AttractionId', how='left')
 
@@ -50,11 +50,11 @@ else:
     final_df = final_df.merge(visit_mode_df, on='VisitMode', how='left', suffixes=('', '_drop'))
     final_df = final_df.loc[:, ~final_df.columns.str.contains('_drop')]
 
-# 4. Mandatory Cleaning [cite: 60, 61, 67]
+# 4. Mandatory Cleaning 
 final_df['Rating'] = final_df['Rating'].fillna(final_df['Rating'].mean()) # Handle missing ratings
 final_df['VisitYear'] = final_df['VisitYear'].astype(int) # Standardize Year
 final_df['VisitMonth'] = final_df['VisitMonth'].astype(int) # Standardize Month
 
-# 5. Save [cite: 193]
+# 5. Save 
 final_df.to_csv('cleaned_tourism_data.csv', index=False)
 print("Phase 1 Complete! 'cleaned_tourism_data.csv' created.")
