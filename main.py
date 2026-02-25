@@ -38,14 +38,14 @@ if page == "Dashboard":
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("Tourist Origin (Continents)")
-        # Visualize user distribution across continents [cite: 69]
+        # Visualize user distribution across continents
         fig_pie = px.pie(df, names='Continent', hole=0.4, 
                          color_discrete_sequence=px.colors.sequential.RdBu)
         st.plotly_chart(fig_pie, use_container_width=True)
     
     with col2:
         st.subheader("Top Regions by Traffic")
-        # Identify top regions based on transaction volume [cite: 89, 92]
+        # Identify top regions based on transaction volume 
         region_counts = df['Region'].value_counts().nlargest(10).reset_index()
         fig_region = px.bar(region_counts, x='count', y='Region', orientation='h',
                             color='count', color_continuous_scale='Viridis')
@@ -57,7 +57,7 @@ if page == "Dashboard":
     col3, col4 = st.columns(2)
     with col3:
         st.subheader("Attraction Popularity & Ratings")
-        # Explore attraction types and their popularity [cite: 70]
+        # Explore attraction types and their popularity 
         attr_stats = df.groupby('AttractionType').agg({'Rating': 'mean', 'UserId': 'count'}).reset_index()
         attr_stats.columns = ['AttractionType', 'Average Rating', 'Visit Count']
         fig_scatter = px.scatter(attr_stats, x='Visit Count', y='Average Rating', 
@@ -67,7 +67,7 @@ if page == "Dashboard":
 
     with col4:
         st.subheader("Monthly Travel Trends")
-        # Standardize and analyze date/time formats for seasonal patterns [cite: 60, 92]
+        # Standardize and analyze date/time formats for seasonal patterns 
         month_trends = df.groupby('VisitMonth').size().reset_index(name='Visits')
         fig_line = px.line(month_trends, x='VisitMonth', y='Visits', markers=True,
                            title="Seasonality: Total Visits per Month")
@@ -77,7 +77,7 @@ if page == "Dashboard":
 
     # --- ROW 3: Behavioral Insights ---
     st.subheader("Correlation: Continent vs. Visit Mode")
-    # Investigate correlation between VisitMode and demographics [cite: 71]
+    # Investigate correlation between VisitMode and demographics 
     behavior_matrix = df.groupby(['Continent', 'VisitMode']).size().reset_index(name='Counts')
     fig_heatmap = px.density_heatmap(behavior_matrix, x='Continent', y='VisitMode', z='Counts',
                                      color_continuous_scale='Blues', text_auto=True,
@@ -86,7 +86,7 @@ if page == "Dashboard":
 
     # --- ROW 4: Rating Distribution ---
     st.subheader("Rating Distribution across All Transactions")
-    # Analyze distribution of ratings to identify quality benchmarks [cite: 72]
+    # Analyze distribution of ratings to identify quality benchmarks 
     fig_hist = px.histogram(df, x='Rating', nbins=5, color='VisitMode',
                             title="How Different Groups Rate Their Experience")
     st.plotly_chart(fig_hist, use_container_width=True)
@@ -98,7 +98,7 @@ elif page == "Predictions & Recommendations":
     
     with tab1:
         st.subheader("Predict Your Experience")
-        # User Inputs [cite: 19, 20, 32]
+        # User Inputs 
         c1, c2 = st.columns(2)
         with c1:
             u_cont = st.selectbox("Continent", encoders['Continent'].classes_)
@@ -109,7 +109,7 @@ elif page == "Predictions & Recommendations":
             u_month = st.slider("Month of Visit", 1, 12, 6)
 
         if st.button("Generate Predictions"):
-            # Prepare inputs for Classification [cite: 77, 93]
+            # Prepare inputs for Classification 
             # We use 1 as default for 'User_Travel_Freq' for new users
             input_cls = [[
                 encoders['Continent'].transform([u_cont])[0],
@@ -122,7 +122,7 @@ elif page == "Predictions & Recommendations":
             res_cls = model_cls.predict(input_cls)
             mode_name = encoders['VisitMode'].inverse_transform(res_cls)[0]
             
-            # Prepare inputs for Regression [cite: 75, 87]
+            # Prepare inputs for Regression 
             # Use the engineering dict to get the historical average for that type
             avg_type_score = engineering['type_means'].get(u_type, df['Rating'].mean())
             input_reg = [[
@@ -140,7 +140,7 @@ elif page == "Predictions & Recommendations":
 
     with tab2:
         st.subheader("Recommended for You")
-        # Content-Based Filtering [cite: 46, 79]
+        # Content-Based Filtering 
         rec_type = st.selectbox("What do you want to see?", df['AttractionType'].unique())
         if st.button("Get Recommendations"):
             # Filter and rank by rating [cite: 54, 55, 88]
